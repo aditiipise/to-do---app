@@ -91,4 +91,5 @@ if st.button("Clear All Tasks 💥"):
 
 
 st.write("---")
+
 st.caption("Made with 💗 using Streamlit")
