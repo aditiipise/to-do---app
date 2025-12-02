@@ -1,95 +1,100 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title="Cute To-Do", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="To-Do App", page_icon="📝", layout="centered")
 
-# --------------- CUSTOM CSS (girly pastel theme + animations) ----------------
+# ----- TECH THEME -----
 st.markdown("""
 <style>
 body {
-    background: linear-gradient(135deg, #ffe6f2, #fff8e7);
+    background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
 }
 .title {
-    font-size: 35px;
+    font-size: 36px;
     font-weight: 800;
-    color: #d63384;
+    color: #4ca3dd;
     text-align: center;
-    margin-bottom: -10px;
+    margin-bottom: -5px;
 }
 .subtitle {
     text-align: center;
-    color: #b84f8c;
-    margin-bottom: 20px;
+    color: #cccccc;
+    margin-bottom: 25px;
 }
-.card {
-    background: white;
-    padding: 15px;
-    border-radius: 14px;
+.task-card {
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 10px;
     margin-bottom: 10px;
-    box-shadow: 0px 6px 20px rgba(220, 80, 160, 0.15);
-    transition: 0.2s;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 30px rgba(220, 80, 160, 0.25);
+    border-left: 4px solid #4ca3dd;
 }
 button {
-    border-radius: 12px !important;
+    border-radius: 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------ TITLE ------------------
-st.markdown("<div class='title'>🌸 Cute To-Do App</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>Made by Aditi Pise & Nikita Rankhamb</div>", unsafe_allow_html=True)
+# ----- TITLE -----
+st.markdown("<div class='title'>📝 To-Do List</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>A Simple Study Productivity Tool</div>", unsafe_allow_html=True)
 
-
-# ------------------ TASK STORAGE ------------------
+# ----- TASK STORAGE -----
 if "tasks" not in st.session_state:
     st.session_state.tasks = []
 
 
-# ------------------ ADD TASK ------------------
-task = st.text_input("Add a new task:", "")
+# ----- ADD NEW TASK -----
+task = st.text_input("Add a new task:")
 
-if st.button("Add Task ✨"):
+if st.button("Add Task ➕"):
     if task.strip():
-        st.session_state.tasks.append({"task": task, "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+        st.session_state.tasks.append({"task": task, "done": False, "time": datetime.now().strftime("%H:%M %d-%m-%Y")})
         st.success("Task added!")
     else:
-        st.error("Enter a valid task")
+        st.error("Enter a valid task!")
 
 
 st.write("## Your Tasks:")
 
-# ------------------ SHOW TASKS ------------------
+# ----- SHOW TASKS -----
 if st.session_state.tasks:
     for i, t in enumerate(st.session_state.tasks):
-        st.markdown(
-            f"""
-            <div class='card'>
-                <b>{t['task']}</b><br>
-                <span style='color:#99567c; font-size:12px;'>Added at: {t['time']}</span>
-            </div>
-            """, unsafe_allow_html=True,
-        )
 
-        col1, col2 = st.columns([1,5])
+        col1, col2, col3 = st.columns([0.7, 5, 1])
+
+        # Checkbox (DONE/NOT DONE)
         with col1:
-            if st.button(f"❌ Delete", key=f"del_{i}"):
+            done = st.checkbox("", value=t["done"], key=f"check_{i}")
+            st.session_state.tasks[i]["done"] = done
+
+        # Task text
+        with col2:
+            task_html = f"""
+            <div class='task-card'>
+                <b style="color:{'#4ca3dd' if not done else '#66cc66'};">
+                    {'✔️ ' if done else ''}{t['task']}
+                </b><br>
+                <span style="color:#888; font-size:12px;">Added: {t['time']}</span>
+            </div>
+            """
+            st.markdown(task_html, unsafe_allow_html=True)
+
+        # DELETE BUTTON
+        with col3:
+            if st.button("🗑", key=f"del_{i}"):
                 st.session_state.tasks.pop(i)
                 st.experimental_rerun()
-        st.write("")
+
 else:
-    st.info("No tasks yet. Add one above! 💖")
+    st.info("No tasks yet. Add one above!")
 
 
-# ------------------ CLEAR ALL ------------------
-if st.button("Clear All Tasks 💥"):
+# ----- CLEAR ALL -----
+if st.button("Clear All Tasks ❌"):
     st.session_state.tasks = []
     st.warning("All tasks cleared!")
 
-
 st.write("---")
-
-st.caption("Made with 💗 using Streamlit")
+st.caption("Made for learning • Streamlit App")
+   
+    
